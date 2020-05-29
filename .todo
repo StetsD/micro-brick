@@ -1,0 +1,11 @@
+1 struct
+2 code
+3 configuration
+4 logging
+5 monitoring
+6 migrations
+7 grpc i/o
+8 msg brocker
+9 testing
+10 docker
+11 ci\cd
