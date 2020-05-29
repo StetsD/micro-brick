@@ -6,10 +6,12 @@ import (
 	"log"
 )
 
-type ServiceCollection map[string]interface{}
+type ServiceCollection struct {
+	UserService *services.ServiceUser
+}
 
 func Bind(serviceNames ...string) ServiceCollection {
-	serviceCollection := make(ServiceCollection)
+	serviceCollection := ServiceCollection{}
 	for _, service := range serviceNames {
 		switch service {
 		case "user":
@@ -18,7 +20,7 @@ func Bind(serviceNames ...string) ServiceCollection {
 				log.Fatalf("%v", err)
 			}
 
-			serviceCollection["user"] = &services.ServiceUser{
+			serviceCollection.UserService = &services.ServiceUser{
 				UserStore: pgRepoUserStore,
 			}
 		}

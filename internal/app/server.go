@@ -27,6 +27,20 @@ func Start() {
 		Handler: router,
 	}
 
+	shutdownChan := make(chan error)
+
+	go func() {
+		err := server.httpServer.ListenAndServe()
+		if err != nil && err != http.ErrServerClosed {
+			shutdownChan <- err
+
+		}
+	}()
+
+	select {
+	case err := <-shutdownChan:
+		fmt.Printf("everything is gone, judges are bought!!! %v", err)
+	}
 	fmt.Println("START")
 }
 
