@@ -2,6 +2,7 @@ package app
 
 import (
 	"fmt"
+	"github.com/stetsd/micro-brick/internal/tools"
 	"net"
 	"net/http"
 )
@@ -18,11 +19,14 @@ func newServer() *Server {
 
 func Start() {
 	server := newServer()
-	//router := NewHttpRouter()
+	serviceCollection := tools.Bind("user")
+	router := NewHttpRouter(serviceCollection)
 
 	server.httpServer = &http.Server{
-		Addr: net.JoinHostPort("", "8000"),
+		Addr:    net.JoinHostPort("", "8000"),
+		Handler: router,
 	}
+
 	fmt.Println("START")
 }
 

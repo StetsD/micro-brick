@@ -2,12 +2,12 @@ package services
 
 import (
 	"context"
-	"github.com/stetsd/micro-brick/internal/domain/interfaces"
 	"github.com/stetsd/micro-brick/internal/domain/models"
+	"github.com/stetsd/micro-brick/internal/domain/repositoryInterfaces"
 )
 
 type ServiceUser struct {
-	UserStore interfaces.UserStore
+	UserStore repositoryInterfaces.UserStore
 }
 
 func (su *ServiceUser) Login(ctx context.Context, name string, password string) *models.User {
