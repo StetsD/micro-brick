@@ -2,6 +2,7 @@ package app
 
 import (
 	"fmt"
+	"github.com/stetsd/micro-brick/internal/domain/services"
 	"github.com/stetsd/micro-brick/internal/tools"
 	"net"
 	"net/http"
@@ -19,7 +20,7 @@ func newServer() *Server {
 
 func Start() {
 	server := newServer()
-	serviceCollection := tools.Bind("user")
+	serviceCollection := tools.Bind(services.ServiceUserName)
 	router := NewHttpRouter(serviceCollection)
 
 	server.httpServer = &http.Server{

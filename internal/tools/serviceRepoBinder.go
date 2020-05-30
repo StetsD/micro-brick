@@ -7,20 +7,20 @@ import (
 )
 
 type ServiceCollection struct {
-	UserService *services.ServiceUser
+	ServiceUser *services.ServiceUser
 }
 
 func Bind(serviceNames ...string) ServiceCollection {
 	serviceCollection := ServiceCollection{}
 	for _, service := range serviceNames {
 		switch service {
-		case "user":
+		case services.ServiceUserName:
 			pgRepoUserStore, err := repositories.NewPgRepoUserStore()
 			if err != nil {
 				log.Fatalf("%v", err)
 			}
 
-			serviceCollection.UserService = &services.ServiceUser{
+			serviceCollection.ServiceUser = &services.ServiceUser{
 				UserStore: pgRepoUserStore,
 			}
 		}

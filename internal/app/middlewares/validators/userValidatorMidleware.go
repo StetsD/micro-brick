@@ -1,15 +1,20 @@
 package validators
 
 import (
-	"context"
+	"fmt"
+	"github.com/stetsd/micro-brick/internal/domain/services"
 	"net/http"
 )
 
-func Login() {
+func Login(w http.ResponseWriter, req *http.Request, next http.HandlerFunc) http.HandlerFunc {
 
+	return next
 }
 
-func Registration(ctx context.Context, next http.Handler) http.Handler {
+func Registration(w http.ResponseWriter, req *http.Request, next http.HandlerFunc) http.HandlerFunc {
+	serv := req.Context().Value(services.ServiceUserName)
+
+	fmt.Printf("IN VALIDATOR : %v\n", serv)
 
 	return next
 }
