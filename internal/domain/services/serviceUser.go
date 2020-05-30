@@ -1,6 +1,7 @@
 package services
 
 import (
+	"fmt"
 	"github.com/stetsd/micro-brick/internal/domain/repositoryInterfaces"
 	"net/http"
 )
@@ -31,4 +32,8 @@ func (su *ServiceUser) Registration(w http.ResponseWriter, req *http.Request, ne
 
 	//return &models.User{}
 	return next
+}
+
+func (su *ServiceUser) Test() {
+	fmt.Println("TEEEEESt")
 }

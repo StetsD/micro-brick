@@ -7,7 +7,7 @@ import (
 )
 
 type ServiceCollection struct {
-	ServiceUser *services.ServiceUser
+	ServiceUser services.ServiceUser
 }
 
 func Bind(serviceNames ...string) ServiceCollection {
@@ -20,7 +20,7 @@ func Bind(serviceNames ...string) ServiceCollection {
 				log.Fatalf("%v", err)
 			}
 
-			serviceCollection.ServiceUser = &services.ServiceUser{
+			serviceCollection.ServiceUser = services.ServiceUser{
 				UserStore: pgRepoUserStore,
 			}
 		}

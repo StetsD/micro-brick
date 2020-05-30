@@ -21,7 +21,7 @@ func newServer() *Server {
 func Start() {
 	server := newServer()
 	serviceCollection := tools.Bind(services.ServiceUserName)
-	router := NewHttpRouter(serviceCollection)
+	router := NewHttpRouter(&serviceCollection)
 
 	server.httpServer = &http.Server{
 		Addr:    net.JoinHostPort("", "8000"),

@@ -6,15 +6,11 @@ import (
 	"net/http"
 )
 
-func Login(w http.ResponseWriter, req *http.Request, next http.HandlerFunc) http.HandlerFunc {
+func Registration(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+		serv := req.Context().Value(services.ServiceUserName)
 
-	return next
-}
-
-func Registration(w http.ResponseWriter, req *http.Request, next http.HandlerFunc) http.HandlerFunc {
-	serv := req.Context().Value(services.ServiceUserName)
-
-	fmt.Printf("IN VALIDATOR : %v\n", serv)
-
-	return next
+		fmt.Printf("IN VALIDATOR : %v\n", serv)
+		next.ServeHTTP(w, req)
+	})
 }

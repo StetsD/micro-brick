@@ -1,14 +1,18 @@
 package ctrls
 
 import (
-	"fmt"
 	"github.com/stetsd/micro-brick/internal/domain/services"
 	"net/http"
 )
 
-func Registration(w http.ResponseWriter, req *http.Request, next http.HandlerFunc) http.HandlerFunc {
+func Registration(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+		service, ok := req.Context().Value(services.ServiceUserName).(services.ServiceUser)
 
-	serv := req.Context().Value(services.ServiceUserName)
-	fmt.Printf("From CONTROLLER : %v\n", serv)
-	return next
+		if ok {
+			service.Test()
+		}
+
+		w.Write([]byte("Mazafaka"))
+	})
 }
