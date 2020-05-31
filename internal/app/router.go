@@ -14,14 +14,16 @@ func NewHttpRouter(serviceCollection *tools.ServiceCollection) *mux.Router {
 
 	if &serviceCollection.ServiceUser != nil {
 		// Registration user
-		routeRegistration := router.Path("/registration").Subrouter()
+		routeRegistration := router.
+			Path("/registration").
+			Subrouter()
 		routeRegistration.Methods("POST")
 		routeRegistration.Use(
+			middlewares.BodyParser,
 			validators.Registration,
 			middlewares.ServiceCtxInjector(services.ServiceUserName, serviceCollection),
 			ctrls.Registration,
 		)
-
 	}
 
 	return router

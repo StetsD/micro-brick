@@ -1,9 +1,7 @@
 package services
 
 import (
-	"fmt"
 	"github.com/stetsd/micro-brick/internal/domain/repositoryInterfaces"
-	"net/http"
 )
 
 type ServiceUser struct {
@@ -12,7 +10,7 @@ type ServiceUser struct {
 
 const ServiceUserName = "ServiceUser"
 
-func (su *ServiceUser) Login(w http.ResponseWriter, req *http.Request, next http.HandlerFunc) http.HandlerFunc {
+func (su *ServiceUser) Login() error {
 	// TODO: validation module, logging
 	// TODO: DB include
 	// TODO: id, email hardcode
@@ -20,10 +18,10 @@ func (su *ServiceUser) Login(w http.ResponseWriter, req *http.Request, next http
 	//user := &models.User{1, name, ""}
 
 	//return &models.User{}
-	return next
+	return nil
 }
 
-func (su *ServiceUser) Registration(w http.ResponseWriter, req *http.Request, next http.HandlerFunc) http.HandlerFunc {
+func (su *ServiceUser) Registration() error {
 	// TODO: validation module, logging
 	// TODO: DB include
 	// TODO: id, email hardcode
@@ -31,9 +29,5 @@ func (su *ServiceUser) Registration(w http.ResponseWriter, req *http.Request, ne
 	//user := &models.User{1, name, email}
 
 	//return &models.User{}
-	return next
-}
-
-func (su *ServiceUser) Test() {
-	fmt.Println("TEEEEESt")
+	return nil
 }
