@@ -19,6 +19,7 @@ func NewHttpRouter(serviceCollection *tools.ServiceCollection) *mux.Router {
 			Subrouter()
 		routeRegistration.Methods("POST")
 		routeRegistration.Use(
+			middlewares.Log,
 			middlewares.BodyParser,
 			validators.Registration,
 			middlewares.ServiceCtxInjector(services.ServiceUserName, serviceCollection),

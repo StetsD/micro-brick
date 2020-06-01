@@ -13,7 +13,6 @@ const ServiceUserName = "ServiceUser"
 func (su *ServiceUser) Login() error {
 	// TODO: validation module, logging
 	// TODO: DB include
-	// TODO: id, email hardcode
 
 	//user := &models.User{1, name, ""}
 
@@ -24,7 +23,6 @@ func (su *ServiceUser) Login() error {
 func (su *ServiceUser) Registration() error {
 	// TODO: validation module, logging
 	// TODO: DB include
-	// TODO: id, email hardcode
 
 	//user := &models.User{1, name, email}
 

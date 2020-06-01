@@ -1,8 +1,8 @@
 package app
 
 import (
-	"fmt"
 	"github.com/stetsd/micro-brick/internal/domain/services"
+	"github.com/stetsd/micro-brick/internal/infrastructure/logger"
 	"github.com/stetsd/micro-brick/internal/tools"
 	"net"
 	"net/http"
@@ -18,35 +18,40 @@ func newServer() *Server {
 	return server
 }
 
+// TODO: from env
+const host = "localhost"
+const port = "8000"
+
 func Start() {
+	logger.Log.Info("Configure the server")
+
 	server := newServer()
 	serviceCollection := tools.Bind(services.ServiceUserName)
 	router := NewHttpRouter(&serviceCollection)
 
 	server.httpServer = &http.Server{
-		Addr:    net.JoinHostPort("", "8000"),
+		Addr:    net.JoinHostPort(host, port),
 		Handler: router,
 	}
 
 	shutdownChan := make(chan error)
 
 	go func() {
+		logger.Log.Info("Server started on " + host + ":" + port)
 		err := server.httpServer.ListenAndServe()
 		if err != nil && err != http.ErrServerClosed {
 			shutdownChan <- err
-
 		}
 	}()
 
 	select {
 	case err := <-shutdownChan:
-		fmt.Printf("everything is gone, judges are bought!!! %v", err)
+		logger.Log.Error("shutdownChan msg: " + err.Error())
 	}
-	fmt.Println("START")
 }
 
-func Stop() {
-	fmt.Println("STOP")
-}
+//func Stop() {
+//	fmt.Println("STOP")
+//}
 
 // TODO: listen the sys signal
