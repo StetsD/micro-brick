@@ -3,26 +3,45 @@ package repositories
 import (
 	"context"
 	"fmt"
+	"github.com/stetsd/micro-brick/internal/app/schemas"
 	"github.com/stetsd/micro-brick/internal/domain/models"
+	"github.com/stetsd/micro-brick/internal/infrastructure/dbDriver"
+	"github.com/stetsd/micro-brick/internal/infrastructure/logger"
 )
 
-// TODO: zapilit pg driver
-
 type PgRepoUserStore struct {
-	// plug
+	pgd *dbDriver.DbDriver
 }
 
-func NewPgRepoUserStore() (*PgRepoUserStore, error) {
-	return &PgRepoUserStore{}, nil
+func NewPgRepoUserStore(pgDriver *dbDriver.DbDriver) (*PgRepoUserStore, error) {
+	return &PgRepoUserStore{pgDriver}, nil
 }
 
-func (pgRUS *PgRepoUserStore) Login(ctx context.Context, user *models.User) error {
+func (pgRUS *PgRepoUserStore) Login(_ context.Context, _ *models.User) error {
 	fmt.Println("plug")
 	return nil
 }
 
-func (pgRUS *PgRepoUserStore) Registration(ctx context.Context, user *models.User) error {
-	fmt.Println("plug")
+func (pgRUS *PgRepoUserStore) Registration(data *schemas.RegistrationBody) error {
+	// TODO: password not salted
+	rows, err := pgRUS.pgd.Db.Query(`
+		INSERT INTO "User" (name, email, password) 
+		VALUES ($1, $2, $3)`,
+		data.Name,
+		data.Email,
+		data.Password,
+	)
+
+	if err != nil {
+		return err
+	}
+
+	defer func() {
+		if err := rows.Close(); err != nil {
+			logger.Log.Fatal(err.Error())
+		}
+	}()
+
 	return nil
 }
 

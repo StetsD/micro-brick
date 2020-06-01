@@ -10,7 +10,7 @@ import (
 	"net/http"
 )
 
-func Registration(next http.Handler) http.Handler {
+func Registration(_ http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		serviceUser, ok := req.Context().Value(services.ServiceUserName).(services.ServiceUser)
 
@@ -19,7 +19,9 @@ func Registration(next http.Handler) http.Handler {
 			return
 		}
 
-		err := serviceUser.Registration()
+		body := req.Context().Value(constants.BodyJson).(schemas.RegistrationBody)
+
+		err := serviceUser.Registration(&body)
 
 		if err != nil {
 			_, ok := err.(errors.ErrorUser)

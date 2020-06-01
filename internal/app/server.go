@@ -3,6 +3,7 @@ package app
 import (
 	"github.com/stetsd/micro-brick/config"
 	"github.com/stetsd/micro-brick/internal/domain/services"
+	"github.com/stetsd/micro-brick/internal/infrastructure/dbDriver"
 	"github.com/stetsd/micro-brick/internal/infrastructure/logger"
 	"github.com/stetsd/micro-brick/internal/tools"
 	"net"
@@ -26,7 +27,13 @@ func NewServer(config config.Config) *Server {
 func (server *Server) Start() {
 	logger.Log.Info("Configure the server")
 
-	serviceCollection := tools.Bind(services.ServiceUserName)
+	dbD, err := dbDriver.NewDbDriver(server.config)
+
+	if err != nil {
+		panic(err)
+	}
+
+	serviceCollection := tools.Bind(dbD, services.ServiceUserName)
 	router := NewHttpRouter(&serviceCollection)
 
 	server.httpServer = &http.Server{
