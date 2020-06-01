@@ -1,6 +1,7 @@
 package app
 
 import (
+	"github.com/stetsd/micro-brick/config"
 	"github.com/stetsd/micro-brick/internal/domain/services"
 	"github.com/stetsd/micro-brick/internal/infrastructure/logger"
 	"github.com/stetsd/micro-brick/internal/tools"
@@ -12,29 +13,24 @@ import (
 )
 
 type Server struct {
+	config     config.Config
 	httpServer *http.Server
 }
 
-func NewServer() *Server {
-	server := &Server{}
+func NewServer(config config.Config) *Server {
+	server := &Server{config: config}
 
 	return server
 }
 
-const host = ""
-
-func (server *Server) Start(port string) {
+func (server *Server) Start() {
 	logger.Log.Info("Configure the server")
-
-	if port == "" {
-		logger.Log.Fatal("missed server port flag")
-	}
 
 	serviceCollection := tools.Bind(services.ServiceUserName)
 	router := NewHttpRouter(&serviceCollection)
 
 	server.httpServer = &http.Server{
-		Addr:    net.JoinHostPort(host, port),
+		Addr:    net.JoinHostPort(server.config.Get(config.AppHost), server.config.Get(config.AppPort)),
 		Handler: router,
 	}
 
@@ -44,7 +40,7 @@ func (server *Server) Start(port string) {
 	signal.Notify(stopChan, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
 
 	go func() {
-		logger.Log.Info("Server started on " + host + ":" + port)
+		logger.Log.Info("Server started on " + server.config.Get(config.AppHost) + ":" + server.config.Get(config.AppPort))
 		err := server.httpServer.ListenAndServe()
 		if err != nil && err != http.ErrServerClosed {
 			shutdownChan <- err

@@ -1,1 +1,3 @@
 .idea
+flyway.conf
+/bin/*
