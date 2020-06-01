@@ -12,6 +12,8 @@ import (
 func NewHttpRouter(serviceCollection *tools.ServiceCollection) *mux.Router {
 	router := mux.NewRouter()
 
+	router.Use(middlewares.Log)
+
 	if &serviceCollection.ServiceUser != nil {
 		// Registration user
 		routeRegistration := router.
@@ -19,7 +21,6 @@ func NewHttpRouter(serviceCollection *tools.ServiceCollection) *mux.Router {
 			Subrouter()
 		routeRegistration.Methods("POST")
 		routeRegistration.Use(
-			middlewares.Log,
 			middlewares.BodyParser,
 			validators.Registration,
 			middlewares.ServiceCtxInjector(services.ServiceUserName, serviceCollection),

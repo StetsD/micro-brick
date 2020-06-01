@@ -11,21 +11,14 @@ type ServiceUser struct {
 const ServiceUserName = "ServiceUser"
 
 func (su *ServiceUser) Login() error {
-	// TODO: validation module, logging
 	// TODO: DB include
 
-	//user := &models.User{1, name, ""}
-
-	//return &models.User{}
 	return nil
 }
 
 func (su *ServiceUser) Registration() error {
-	// TODO: validation module, logging
 	// TODO: DB include
+	//return errors.ErrorEmailExists
 
-	//user := &models.User{1, name, email}
-
-	//return &models.User{}
 	return nil
 }

@@ -6,26 +6,30 @@ import (
 	"github.com/stetsd/micro-brick/internal/tools"
 	"net"
 	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
 )
 
 type Server struct {
 	httpServer *http.Server
 }
 
-func newServer() *Server {
+func NewServer() *Server {
 	server := &Server{}
 
 	return server
 }
 
-// TODO: from env
-const host = "localhost"
-const port = "8000"
+const host = ""
 
-func Start() {
+func (server *Server) Start(port string) {
 	logger.Log.Info("Configure the server")
 
-	server := newServer()
+	if port == "" {
+		logger.Log.Fatal("missed server port flag")
+	}
+
 	serviceCollection := tools.Bind(services.ServiceUserName)
 	router := NewHttpRouter(&serviceCollection)
 
@@ -35,6 +39,9 @@ func Start() {
 	}
 
 	shutdownChan := make(chan error)
+	stopChan := make(chan os.Signal, 1)
+
+	signal.Notify(stopChan, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
 
 	go func() {
 		logger.Log.Info("Server started on " + host + ":" + port)
@@ -47,11 +54,15 @@ func Start() {
 	select {
 	case err := <-shutdownChan:
 		logger.Log.Error("shutdownChan msg: " + err.Error())
+	case sig := <-stopChan:
+		server.Stop()
+		logger.Log.Info("stopChan msg: Server was " + sig.String())
 	}
 }
 
-//func Stop() {
-//	fmt.Println("STOP")
-//}
-
-// TODO: listen the sys signal
+func (server *Server) Stop() {
+	err := server.httpServer.Close()
+	if err != nil {
+		logger.Log.Fatal(err.Error())
+	}
+}
