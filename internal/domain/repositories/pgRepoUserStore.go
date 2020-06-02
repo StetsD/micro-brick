@@ -4,27 +4,21 @@ import (
 	"context"
 	"fmt"
 	"github.com/stetsd/micro-brick/internal/app/schemas"
+	"github.com/stetsd/micro-brick/internal/domain/infrasInterfaces"
 	"github.com/stetsd/micro-brick/internal/domain/models"
-	"github.com/stetsd/micro-brick/internal/infrastructure/dbDriver"
-	"github.com/stetsd/micro-brick/internal/infrastructure/logger"
 )
 
 type PgRepoUserStore struct {
-	pgd *dbDriver.DbDriver
+	pgd infrasInterfaces.DbDriver
 }
 
-func NewPgRepoUserStore(pgDriver *dbDriver.DbDriver) (*PgRepoUserStore, error) {
-	return &PgRepoUserStore{pgDriver}, nil
-}
-
-func (pgRUS *PgRepoUserStore) Login(_ context.Context, _ *models.User) error {
-	fmt.Println("plug")
-	return nil
+func NewPgRepoUserStore(pgDriver infrasInterfaces.DbDriver) *PgRepoUserStore {
+	return &PgRepoUserStore{pgDriver}
 }
 
 func (pgRUS *PgRepoUserStore) Registration(data *schemas.RegistrationBody) error {
 	// TODO: password not salted
-	rows, err := pgRUS.pgd.Db.Query(`
+	err := pgRUS.pgd.Query(`
 		INSERT INTO "User" (name, email, password) 
 		VALUES ($1, $2, $3)`,
 		data.Name,
@@ -36,12 +30,11 @@ func (pgRUS *PgRepoUserStore) Registration(data *schemas.RegistrationBody) error
 		return err
 	}
 
-	defer func() {
-		if err := rows.Close(); err != nil {
-			logger.Log.Fatal(err.Error())
-		}
-	}()
+	return nil
+}
 
+func (pgRUS *PgRepoUserStore) Login(_ context.Context, _ *models.User) error {
+	fmt.Println("plug")
 	return nil
 }
 

@@ -1,7 +1,7 @@
 package config
 
 import (
-	"github.com/stetsd/micro-brick/errors"
+	"github.com/stetsd/micro-brick/errorsCmd"
 	"os"
 )
 
@@ -36,7 +36,7 @@ func EnvParseToConfigMap() (Config, error) {
 		val := os.Getenv(field)
 
 		if val == "" {
-			return config, errors.Error("env " + field + " is required")
+			return config, errorsCmd.ErrorCmd("env " + field + " is required")
 		}
 
 		config._map[field] = val

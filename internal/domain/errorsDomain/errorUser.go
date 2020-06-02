@@ -1,4 +1,4 @@
-package errors
+package errorsDomain
 
 type ErrorUser string
 

@@ -2,6 +2,9 @@ package logger
 
 import (
 	"github.com/sirupsen/logrus"
+	"net/http"
+	"strconv"
+	"time"
 )
 
 type Logger struct {
@@ -16,13 +19,17 @@ func NewLogger(logger logrus.FieldLogger) *Logger {
 }
 
 func (l *Logger) Info(data string) {
-	l.logger.Infof(data + "\n")
+	l.logger.Infof(time.Now().UTC().Format(time.RFC3339) + ":" + data + "\n")
 }
 
 func (l *Logger) Fatal(data string) {
-	l.logger.Fatalf(data + "\n")
+	l.logger.Fatalf(time.Now().UTC().Format(time.RFC3339) + ":" + data + "\n")
 }
 
 func (l *Logger) Error(data string) {
-	l.logger.Error(data + "\n")
+	l.logger.Error(time.Now().UTC().Format(time.RFC3339) + ":" + data + "\n")
+}
+
+func (l *Logger) ErrorHttp(req *http.Request, data string, code int) {
+	l.logger.Error(req.Method + " " + req.RequestURI + " " + strconv.Itoa(code) + ": " + data + "\n")
 }

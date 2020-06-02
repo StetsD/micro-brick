@@ -5,6 +5,8 @@ import (
 	"github.com/go-ozzo/ozzo-validation/is"
 	"github.com/stetsd/micro-brick/internal/app/constants"
 	"github.com/stetsd/micro-brick/internal/app/schemas"
+	"github.com/stetsd/micro-brick/internal/errorsApp"
+	"github.com/stetsd/micro-brick/internal/infrastructure/logger"
 	"github.com/stetsd/micro-brick/internal/tools/helpers"
 	"net/http"
 )
@@ -17,6 +19,10 @@ func Registration(next http.Handler) http.Handler {
 
 		if !ok {
 			helpers.Throw(w, http.StatusInternalServerError, &constants.EmptyString)
+			logger.Log.Error(
+				errorsApp.Error("userValidationMiddleware: missed field \"" + constants.BodyJson + "\" in ctx"),
+			)
+			return
 		}
 
 		err := validation.ValidateStruct(
@@ -28,7 +34,9 @@ func Registration(next http.Handler) http.Handler {
 
 		if err != nil {
 			errorText := err.Error()
+			logger.Log.ErrorHttp(req, errorText, http.StatusBadRequest)
 			helpers.Throw(w, http.StatusBadRequest, &errorText)
+			return
 		}
 
 		next.ServeHTTP(w, req)

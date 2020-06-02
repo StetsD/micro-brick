@@ -4,8 +4,10 @@ import (
 	"encoding/json"
 	"github.com/stetsd/micro-brick/internal/app/constants"
 	"github.com/stetsd/micro-brick/internal/app/schemas"
-	"github.com/stetsd/micro-brick/internal/domain/errors"
+	"github.com/stetsd/micro-brick/internal/domain/errorsDomain"
 	"github.com/stetsd/micro-brick/internal/domain/services"
+	"github.com/stetsd/micro-brick/internal/errorsApp"
+	"github.com/stetsd/micro-brick/internal/infrastructure/logger"
 	"github.com/stetsd/micro-brick/internal/tools/helpers"
 	"net/http"
 )
@@ -15,6 +17,9 @@ func Registration(_ http.Handler) http.Handler {
 		serviceUser, ok := req.Context().Value(services.ServiceUserName).(services.ServiceUser)
 
 		if !ok {
+			logger.Log.Error(
+				errorsApp.Error("crtls.registration: missed field \"" + services.ServiceUserName + "\" in ctx"),
+			)
 			helpers.Throw(w, http.StatusInternalServerError, &constants.EmptyString)
 			return
 		}
@@ -24,11 +29,13 @@ func Registration(_ http.Handler) http.Handler {
 		err := serviceUser.Registration(&body)
 
 		if err != nil {
-			_, ok := err.(errors.ErrorUser)
+			_, ok := err.(errorsDomain.ErrorUser)
 			if ok {
 				errorText := err.Error()
+				logger.Log.ErrorHttp(req, errorText, http.StatusBadRequest)
 				helpers.Throw(w, http.StatusBadRequest, &errorText)
 			} else {
+				logger.Log.Error(err.Error())
 				helpers.Throw(w, http.StatusInternalServerError, &constants.EmptyString)
 			}
 			return
@@ -38,6 +45,7 @@ func Registration(_ http.Handler) http.Handler {
 		jsonBody, err := json.Marshal(result)
 
 		if err != nil {
+			logger.Log.Error(err.Error())
 			helpers.Throw(w, http.StatusInternalServerError, &constants.EmptyString)
 			return
 		}
@@ -46,6 +54,7 @@ func Registration(_ http.Handler) http.Handler {
 		_, err = w.Write(jsonBody)
 
 		if err != nil {
+			logger.Log.Error(err.Error())
 			helpers.Throw(w, http.StatusInternalServerError, &constants.EmptyString)
 			return
 		}

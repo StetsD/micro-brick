@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"github.com/stetsd/micro-brick/internal/app/constants"
 	"github.com/stetsd/micro-brick/internal/app/schemas"
+	"github.com/stetsd/micro-brick/internal/infrastructure/logger"
 	"github.com/stetsd/micro-brick/internal/tools/helpers"
 	"io/ioutil"
 	"net/http"
@@ -15,6 +16,7 @@ func BodyParser(next http.Handler) http.Handler {
 		bodyRaw, err := ioutil.ReadAll(req.Body)
 
 		if err != nil {
+			logger.Log.Error(err.Error())
 			helpers.Throw(w, http.StatusInternalServerError, &constants.EmptyString)
 			return
 		}
@@ -23,6 +25,7 @@ func BodyParser(next http.Handler) http.Handler {
 		err = json.Unmarshal(bodyRaw, &msg)
 
 		if err != nil {
+			logger.Log.ErrorHttp(req, err.Error(), http.StatusBadRequest)
 			helpers.Throw(w, http.StatusBadRequest, &constants.EmptyString)
 			return
 		}

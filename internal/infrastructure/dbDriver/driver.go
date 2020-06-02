@@ -5,11 +5,12 @@ import (
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
 	"github.com/stetsd/micro-brick/config"
+	"github.com/stetsd/micro-brick/internal/infrastructure/logger"
 )
 
 type DbDriver struct {
 	dialect string
-	Db      *sqlx.DB
+	db      *sqlx.DB
 }
 
 var dbDriver DbDriver
@@ -37,8 +38,32 @@ func NewDbDriver(conf config.Config) (*DbDriver, error) {
 
 	dbDriver = DbDriver{
 		dialect: "postgres",
-		Db:      db,
+		db:      db,
 	}
 
 	return &dbDriver, nil
+}
+
+func (dbd *DbDriver) Query(qString string, fields ...string) error {
+	var arguments []interface{} = make([]interface{}, len(fields))
+
+	for i, field := range fields {
+		arguments[i] = field
+	}
+
+	rows, err := dbd.db.Query(qString,
+		arguments...,
+	)
+
+	if err != nil {
+		return err
+	}
+
+	defer func() {
+		if err := rows.Close(); err != nil {
+			logger.Log.Fatal(err.Error())
+		}
+	}()
+
+	return nil
 }

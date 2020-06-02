@@ -17,14 +17,11 @@ func (su *ServiceUser) Login() error {
 }
 
 func (su *ServiceUser) Registration(data *schemas.RegistrationBody) error {
-
 	err := su.UserStore.Registration(data)
 
 	if err != nil {
 		return err
 	}
-
-	//return errors.ErrorEmailExists
 
 	return nil
 }
